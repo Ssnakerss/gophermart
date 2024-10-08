@@ -4,13 +4,11 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+
+	"github.com/Ssnakerss/gophermart/internal/models"
 )
 
-type User struct {
-	Id           string
-	Hash         string
-	IsAuthorizad bool
-}
+type User models.User
 
 func (u *User) Login(id string, pass string) {
 	u.Id = id

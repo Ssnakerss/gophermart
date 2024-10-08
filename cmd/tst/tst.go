@@ -2,12 +2,9 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"log/slog"
 	"time"
 
-	"github.com/Ssnakerss/gophermart/internal/logger"
-	"github.com/Ssnakerss/gophermart/internal/mock"
+	"github.com/Ssnakerss/gophermart/internal/models"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -22,21 +19,49 @@ const (
 	//token generate hex
 )
 
+type money uint64
+
 func main() {
-	logger.Setup("DEV")
-	slog.Info("Hello", "module", "tst")
+	// logger.Setup("DEV")
+	// slog.Info("Hello", "module", "tst")
 
-	tokenString, err := BuildJWTString()
-	if err != nil {
-		log.Fatal((err))
-	}
+	// tokenString, err := BuildJWTString()
+	// if err != nil {
+	// 	log.Fatal((err))
+	// }
 
-	slog.Info("created", "JWT", tokenString)
+	// slog.Info("created", "JWT", tokenString)
 
-	for i := 0; i < 10; i++ {
-		_, s, a := mock.YourAcrualIs(i)
-		fmt.Printf("order %d status is %s and acrual is %f\n\r", i, s, a)
-	}
+	// for i := 0; i < 10; i++ {
+	// 	_, s, a := mock.YourAcrualIs(i)
+	// 	fmt.Printf("order %d status is %s and acrual is %f\n\r", i, s, a)
+	// }
+
+	// var sum float64
+	// for i := 0; i < 10_000_000; i++ {
+	// 	sum += float64(0.8)
+	// }
+
+	// var expectedSum int
+
+	// for i := 0; i < 1000_000; i++ {
+	// 	expectedSum += int(8)
+	// }
+
+	// fmt.Println(sum, expectedSum, sum == float64(expectedSum))
+
+	var b models.Bonus
+
+	b.Set(1.11)
+	fmt.Printf("bonus: %d, currency: %f\n\r", b, b.Get())
+	b = b + 100
+	fmt.Printf("new bonus: %d, currency: %f\n\r", b, b.Get())
+	b.Add(100.33)
+	fmt.Printf("after add bonus: %d, currency: %f\n\r", b, b.Get())
+	b.Sub(100.11)
+	fmt.Printf("after sub bonus: %d, currency: %f\n\r", b, b.Get())
+
+	fmt.Printf("trying to sub more %s \n\r", b.Sub(1000))
 }
 
 func GetUserId(tokenString string) string {
