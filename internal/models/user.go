@@ -1,7 +1,7 @@
 package models
 
 type User struct {
-	Id           string
+	ID           string
 	Hash         string
 	IsAuthorizad bool
 }

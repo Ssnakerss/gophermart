@@ -5,11 +5,11 @@ import (
 )
 
 type OrderStorage interface {
-	New(ctx context.Context, params ...string) error
-
+	//вставлят или обновляет заказ в хранилище по номеру
 	SaveOrder(ctx context.Context, order *Order) error
+	//достает заказ из хранилища по номеру
 	GetOrder(ctx context.Context, order *Order) error
-
-	GetOrdersByUser(ctx context.Context, user *User) []Order
-	GetOrdersByStatus(ctx context.Context, stat OrderStatus) []Order
+	//достает все заказы из хранилища по параметрам
+	//в нашем случае это имя пользователя и/или статус
+	GetAllOrders(ctx context.Context, order *Order) []Order
 }

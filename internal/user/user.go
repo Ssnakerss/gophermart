@@ -11,7 +11,7 @@ import (
 type User models.User
 
 func (u *User) Login(id string, pass string) {
-	u.Id = id
+	u.ID = id
 	hash, err := makeHash(id, pass)
 	if err != nil {
 		return
