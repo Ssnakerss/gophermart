@@ -12,7 +12,7 @@ import (
 
 const ConString = "host=localhost user=postgres dbname=postgres password=postgres sslmode=disable"
 
-type Db struct {
+type DB struct {
 	conString string
 	db        *gorm.DB
 }

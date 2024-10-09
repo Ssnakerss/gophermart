@@ -18,8 +18,8 @@ type Claims struct {
 }
 
 const (
-	TOKEN_EXP  = time.Hour * 3
-	SECRET_KEY = "secretkey"
+	TokenExp  = time.Hour * 3
+	SecretKey = "secretkey"
 	//token generate hex
 )
 
@@ -110,10 +110,10 @@ func main() {
 	// db.UpdateOrder(ctx, &o)
 }
 
-func GetUserId(tokenString string) string {
+func GetUserID(tokenString string) string {
 	claims := &Claims{}
 	jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
-		return []byte(SECRET_KEY), nil
+		return []byte(SecretKey), nil
 	})
 	return claims.UserID
 }
@@ -123,11 +123,11 @@ func BuildJWTString() (string, error) {
 		jwt.SigningMethodHS256,
 		Claims{
 			RegisteredClaims: jwt.RegisteredClaims{
-				ExpiresAt: jwt.NewNumericDate(time.Now().Add(TOKEN_EXP)),
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(TokenExp)),
 			},
 			UserID: "ivan",
 		})
-	tokenString, err := token.SignedString([]byte(SECRET_KEY))
+	tokenString, err := token.SignedString([]byte(SecretKey))
 	if err != nil {
 		return "", err
 	}

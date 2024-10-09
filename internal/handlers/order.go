@@ -11,7 +11,7 @@ import (
 	"github.com/Ssnakerss/gophermart/internal/user"
 )
 
-func PostApiUserOrders(w http.ResponseWriter, r *http.Request) {
+func PostAPIUserOrders(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
