@@ -11,7 +11,7 @@ func New() *chi.Mux {
 	r.Use(middleware.Logger)
 	// r.Post("/api/usesr/register", user.Register)
 	// r.Post("/api/user/login", user.Login)
-	r.With(middleware.AllowContentType("text/plain")).Post("/api/user/orders", handlers.PostApiUserOrders)
+	r.With(middleware.AllowContentType("text/plain")).Post("/api/user/orders", handlers.PostAPIUserOrders)
 	//r.Get("/api/user/orders", handlers.PostApiUserOrders)
 	// r.Get("/api.user/balance", account.Balance)
 	// r.Post("/api/user/balance/withdraw", account.Withdraw)

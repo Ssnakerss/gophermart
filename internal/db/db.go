@@ -17,10 +17,10 @@ type DB struct {
 	db        *gorm.DB
 }
 
-func New(conString string) *Db {
+func New(conString string) *DB {
 	//`postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable`
 	//"host=localhost user=postgres dbname=postgres password=postgres sslmode=disable"
-	var db Db
+	var db DB
 	db.conString = conString
 	var err error
 	db.db, err = gorm.Open(postgres.Open(db.conString), &gorm.Config{})
@@ -30,15 +30,15 @@ func New(conString string) *Db {
 	return &db
 }
 
-func (db *Db) Migrate(ctx context.Context) error {
+func (db *DB) Migrate(ctx context.Context) error {
 	return db.db.WithContext(ctx).AutoMigrate(&models.Order{})
 }
 
-func (db *Db) SaveOrder(ctx context.Context, order *models.Order) error {
+func (db *DB) SaveOrder(ctx context.Context, order *models.Order) error {
 	return db.db.WithContext(ctx).Save(order).Error
 }
 
-func (db *Db) GetOrder(ctx context.Context, order *models.Order) error {
+func (db *DB) GetOrder(ctx context.Context, order *models.Order) error {
 	err := db.db.WithContext(ctx).First(order).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return models.ErrRecordNotFound
@@ -46,7 +46,7 @@ func (db *Db) GetOrder(ctx context.Context, order *models.Order) error {
 	return err
 }
 
-func (db *Db) GetAllOrders(ctx context.Context, order *models.Order) []models.Order {
+func (db *DB) GetAllOrders(ctx context.Context, order *models.Order) []models.Order {
 	var orders []models.Order
 	db.db.WithContext(ctx).Find(&orders)
 	return orders
