@@ -1,14 +1,13 @@
 package main
 
 import (
-	"context"
-	"errors"
+	"encoding/json"
 	"fmt"
 	"time"
 
-	"github.com/Ssnakerss/gophermart/internal/db"
 	"github.com/Ssnakerss/gophermart/internal/logger"
 	"github.com/Ssnakerss/gophermart/internal/models"
+	"github.com/Ssnakerss/gophermart/internal/types"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -70,31 +69,43 @@ func main() {
 	// t := time.Now()
 
 	// s := t.Format("2006-01-02T15:04:05Z07:00")
-
+	//                2024-10-10T13:01:17.617559+03:00
 	// tt, _ := time.Parse("2006-01-02T15:04:05Z07:00", s)
 
 	// fmt.Printf("RFC3339 : %s | Date : %v", s, tt)
 	// bctx := context.Background()
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	db := db.New(db.ConString)
-	db.Migrate(ctx)
-	var o models.Order
-	o.Number.Set(397760)
-	err := db.GetOrder(ctx, &o)
-	fmt.Println("get order: ", err)
-	if errors.Is(err, models.ErrRecordNotFound) {
-		fmt.Println("!!!!!!!!!!!!!!!")
-	}
 
-	// order := models.Order{
-	// 	UserID:    "ivan",
-	// 	Accrual:   b,
-	// 	Status:    models.NEW,
-	// 	TimeStamp: time.Now(),
+	// ctx, cancel := context.WithCancel(context.Background())
+	// defer cancel()
+	// db := db.New(db.ConString, db.Info)
+	// db.Migrate(ctx)
+
+	// var o models.Order
+	// o.Number.Set(0)
+	// err := db.GetOrder(ctx, &o)
+	// fmt.Printf("get order: %v\n\r", o)
+
+	// if errors.Is(err, models.ErrRecordNotFound) {
+	// 	fmt.Println("not found error")
 	// }
-	// order.Number.Set(397_471) // set order number
-	// fmt.Println(order)
+
+	// uo := models.Order{
+	// 	UserID: "dummy",
+	// }
+	// orders := db.GetAllOrders(ctx, &uo)
+	// fmt.Printf("Get Orders \r\n%v\n\r", orders)
+
+	order := models.Order{
+		UserID:    "ivan",
+		Accrual:   b,
+		Status:    types.NEW,
+		TimeStamp: types.TimeRFC3339(time.Now()),
+	}
+	order.Number.Set(397_471) // set order number
+	s, err := json.Marshal(types.TimeRFC3339(time.Now()))
+	fmt.Println(">>>", string(s), "<<<<", err, "!")
+	s, err = json.Marshal(time.Now())
+	fmt.Println(">>>", string(s), "<<<<", err, "!")
 
 	// db.SaveOrder(ctx, &order)
 

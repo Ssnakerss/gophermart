@@ -17,7 +17,7 @@ func (u *User) Login(id string, pass string) {
 		return
 	}
 	u.Hash = hash
-	u.IsAuthorizad = true
+	u.IsAuthorized = true
 }
 
 func (u *User) Register(id string, pass string) {
@@ -26,7 +26,7 @@ func (u *User) Register(id string, pass string) {
 		return
 	}
 	u.Hash = hash
-	u.IsAuthorizad = true
+	u.IsAuthorized = true
 }
 
 func makeHash(id string, pass string) (string, error) {
