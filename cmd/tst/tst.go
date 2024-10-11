@@ -1,14 +1,16 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/Ssnakerss/gophermart/internal/db"
 	"github.com/Ssnakerss/gophermart/internal/logger"
+	"github.com/Ssnakerss/gophermart/internal/models"
 	"github.com/golang-jwt/jwt/v4"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Claims struct {
@@ -21,8 +23,6 @@ const (
 	SecretKey = "secretkey"
 	//token generate hex
 )
-
-type money uint64
 
 func main() {
 	logger.Setup("DEV")
@@ -75,10 +75,26 @@ func main() {
 	// fmt.Printf("RFC3339 : %s | Date : %v", s, tt)
 	// bctx := context.Background()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	// // ctx, cancel := context.WithCancel(context.Background())
+	// defer cancel()
 	db := db.New(db.ConString, db.Info)
-	db.Migrate(ctx)
+	// db.Migrate(ctx)
+
+	account := models.Account{UserID: "ivan"}
+	fmt.Printf("%v\r\n", account)
+	r := db.DB.Model(&account).
+		Clauses(clause.Returning{Columns: []clause.Column{{Name: "balance"}}}).
+		Where("balance >= ?", 1).
+		Update("balance", gorm.Expr("balance - ?", 1))
+	fmt.Printf("%v\r\n", account)
+
+	r = db.DB.Model(&account).
+		Clauses(clause.Returning{Columns: []clause.Column{{Name: "balance"}}}).
+		Where("balance >= ?", 10).
+		Update("balance", gorm.Expr("balance - ?", 10))
+	fmt.Printf("%v\r\n", account)
+
+	fmt.Println(r.Error)
 
 	// var o models.Order
 	// o.Number.Set(0)

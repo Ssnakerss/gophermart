@@ -10,6 +10,7 @@ import (
 	"github.com/Ssnakerss/gophermart/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"gorm.io/gorm/logger"
 )
 
@@ -106,7 +107,10 @@ func (db *GormDB) UpdateAccount(ctx context.Context, accTransaction *models.Tran
 			col = "debit"
 			colSql = "debit + ?"
 		case "C":
-			err = tx.Model(&account).Where("balance >= ?", accTransaction.Bonus).Update("balance", gorm.Expr("balance - ?", accTransaction.Bonus)).Error
+			err = tx.Model(&account).
+				Clauses(clause.Returning{Columns: []clause.Column{{Name: "balance"}}}).
+				Where("balance >= ?", accTransaction.Bonus).
+				Update("balance", gorm.Expr("balance - ?", accTransaction.Bonus)).Error
 			col = "credit"
 			colSql = "credit + ?"
 		}
