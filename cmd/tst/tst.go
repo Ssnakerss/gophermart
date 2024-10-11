@@ -1,13 +1,13 @@
 package main
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
+	"net/http"
 	"time"
 
+	"github.com/Ssnakerss/gophermart/internal/db"
 	"github.com/Ssnakerss/gophermart/internal/logger"
-	"github.com/Ssnakerss/gophermart/internal/models"
-	"github.com/Ssnakerss/gophermart/internal/types"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -53,9 +53,9 @@ func main() {
 
 	// fmt.Println(sum, expectedSum, sum == float64(expectedSum))
 
-	var b models.Bonus
+	// var b types.Bonus
 
-	b.Set(1.11)
+	// b.Set(1.11)
 	// fmt.Printf("bonus: %d, currency: %f\n\r", b, b.Get())
 	// b = b + 100
 	// fmt.Printf("new bonus: %d, currency: %f\n\r", b, b.Get())
@@ -75,10 +75,10 @@ func main() {
 	// fmt.Printf("RFC3339 : %s | Date : %v", s, tt)
 	// bctx := context.Background()
 
-	// ctx, cancel := context.WithCancel(context.Background())
-	// defer cancel()
-	// db := db.New(db.ConString, db.Info)
-	// db.Migrate(ctx)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	db := db.New(db.ConString, db.Info)
+	db.Migrate(ctx)
 
 	// var o models.Order
 	// o.Number.Set(0)
@@ -95,18 +95,6 @@ func main() {
 	// orders := db.GetAllOrders(ctx, &uo)
 	// fmt.Printf("Get Orders \r\n%v\n\r", orders)
 
-	order := models.Order{
-		UserID:    "ivan",
-		Accrual:   b,
-		Status:    types.NEW,
-		TimeStamp: types.TimeRFC3339(time.Now()),
-	}
-	order.Number.Set(397_471) // set order number
-	s, err := json.Marshal(types.TimeRFC3339(time.Now()))
-	fmt.Println(">>>", string(s), "<<<<", err, "!")
-	s, err = json.Marshal(time.Now())
-	fmt.Println(">>>", string(s), "<<<<", err, "!")
-
 	// db.SaveOrder(ctx, &order)
 
 	// order.Accrual.Add(10.11)
@@ -119,6 +107,22 @@ func main() {
 	// fmt.Println(o)
 	// o.Status = models.CHECKING
 	// db.UpdateOrder(ctx, &o)
+
+	// server := &http.Server{
+	// 	Addr:    ":8080",
+	// 	Handler: http.HandlerFunc(helloHandler),
+	// }
+
+	// server.ConnContext = func(ctx context.Context, c net.Conn) context.Context {
+	// 	return context.Background()
+	// }
+
+}
+
+//type WithContexFunc func(http.ResponseWriter, *http.Request) http.HandlerFunc
+
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Hello, World!")
 }
 
 func GetUserID(tokenString string) string {

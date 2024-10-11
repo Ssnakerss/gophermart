@@ -12,7 +12,7 @@ import (
 	"github.com/Ssnakerss/gophermart/internal/user"
 )
 
-func PostAPIUserOrders(w http.ResponseWriter, r *http.Request) {
+func PostAPIUserOrders(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		slog.Warn("request body read error")

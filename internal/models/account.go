@@ -1,37 +1,19 @@
 package models
 
-import "fmt"
-
-//https://golangprojectstructure.com/representing-money-and-currency-go-code/
-type Bonus uint64
-
-func (b *Bonus) Set(fb float64) {
-	*b = Bonus(uint64(fb * 100))
-}
-func (b *Bonus) Get() float64 {
-	return float64(uint64(*b)) / 100
-}
-func (b *Bonus) Add(fb float64) {
-	b.Set(b.Get() + fb)
-}
-func (b *Bonus) Sub(fb float64) error {
-	f := b.Get() - fb
-	if f < 0 {
-		return fmt.Errorf("got negative value %f ", f)
-	}
-	b.Set(f)
-	return nil
-}
+import "github.com/Ssnakerss/gophermart/internal/types"
 
 type Account struct {
-	Number  string
-	Balance Bonus
-	History []Transaction
+	UserID    string            `gorm:"primary_key"` //используем UserID вместо номера счета
+	Balance   types.Bonus       `json:"current"`     //текущий баланс
+	Debit     types.Bonus       //сумма всех поступлений
+	Credit    types.Bonus       `json:"withdrawn"` //сумма всех списаний
+	UpdatedAt types.TimeRFC3339 //дата последнего обновления
 }
 
 type Transaction struct {
-	AccountNumber string
-	DebitCreadit  string
-	OrderNumber   int
-	Amount        Bonus
+	UserID      string            //используем UserID вместо номера счета
+	OrderNumber types.OrderNum    `json:"order"` //номер заказа по которуму проходила операция
+	Bonus       types.Bonus       `json:"sum"`   //сумма бонусов в операции
+	Indicator   string            //Вид операции D-debit +, C-credit - , E-error недостаточно средств для списания
+	TimeStamp   types.TimeRFC3339 `json:"processed_at"`
 }
