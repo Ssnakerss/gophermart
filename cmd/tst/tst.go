@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -9,8 +10,6 @@ import (
 	"github.com/Ssnakerss/gophermart/internal/logger"
 	"github.com/Ssnakerss/gophermart/internal/models"
 	"github.com/golang-jwt/jwt/v4"
-	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type Claims struct {
@@ -75,26 +74,17 @@ func main() {
 	// fmt.Printf("RFC3339 : %s | Date : %v", s, tt)
 	// bctx := context.Background()
 
-	// // ctx, cancel := context.WithCancel(context.Background())
-	// defer cancel()
-	db := db.New(db.ConString, db.Info)
-	// db.Migrate(ctx)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	ddd := db.New(db.ConString, db.Info)
+	// ddd.Migrate(ctx)
 
-	account := models.Account{UserID: "ivan"}
-	fmt.Printf("%v\r\n", account)
-	r := db.DB.Model(&account).
-		Clauses(clause.Returning{Columns: []clause.Column{{Name: "balance"}}}).
-		Where("balance >= ?", 1).
-		Update("balance", gorm.Expr("balance - ?", 1))
-	fmt.Printf("%v\r\n", account)
-
-	r = db.DB.Model(&account).
-		Clauses(clause.Returning{Columns: []clause.Column{{Name: "balance"}}}).
-		Where("balance >= ?", 10).
-		Update("balance", gorm.Expr("balance - ?", 10))
-	fmt.Printf("%v\r\n", account)
-
-	fmt.Println(r.Error)
+	tr := models.Transaction{
+		UserID:    "ivan",
+		Indicator: "C",
+	}
+	trs := ddd.GetHistory(ctx, &tr)
+	fmt.Println(trs)
 
 	// var o models.Order
 	// o.Number.Set(0)
