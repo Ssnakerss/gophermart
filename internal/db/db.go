@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Ssnakerss/gophermart/internal/models"
-	"github.com/Ssnakerss/gophermart/internal/types"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -93,7 +92,6 @@ func (db *GormDB) PostTransaction(ctx context.Context, accTransaction *models.Tr
 	account := models.Account{
 		UserID: accTransaction.UserID,
 	}
-	accTransaction.TimeStamp = types.TimeRFC3339(time.Now())
 
 	col := ""
 	colSql := ""
