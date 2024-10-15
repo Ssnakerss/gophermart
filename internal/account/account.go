@@ -32,5 +32,5 @@ func (ac *AccountKeeper) GetWithdrawHistory(ctx context.Context, userID string) 
 		Indicator: "C",
 	}
 	return ac.storage.GetHistory(ctx, &tr)
-	return nil
+
 }

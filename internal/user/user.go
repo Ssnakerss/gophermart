@@ -1,38 +1,68 @@
 package user
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 
 	"github.com/Ssnakerss/gophermart/internal/models"
+	"github.com/go-chi/jwtauth/v5"
 )
 
-type User models.User
-
-func (u *User) Login(id string, pass string) {
-	u.ID = id
-	hash, err := makeHash(id, pass)
-	if err != nil {
-		return
-	}
-	u.Hash = hash
-	u.IsAuthorized = true
+type UserManager struct {
+	storage   models.UserStorage
+	tokenAuth *jwtauth.JWTAuth
 }
 
-func (u *User) Register(id string, pass string) {
-	hash, err := makeHash(id, pass)
-	if err != nil {
-		return
+func NewUserManager(storage models.UserStorage) *UserManager {
+	return &UserManager{
+		storage:   storage,
+		tokenAuth: jwtauth.New("HS256", []byte("secret_key_here"), nil),
 	}
-	u.Hash = hash
-	u.IsAuthorized = true
 }
 
-func makeHash(id string, pass string) (string, error) {
+type UserID string
+
+func (u *UserManager) Login(ctx context.Context, cred *models.UserCred) (*models.User, error) {
+	var err error
+	user := &models.User{ID: cred.Login}
+	user.Hash, err = makeHash(cred)
+	if err != nil {
+		return user, err
+	}
+	err = u.storage.GetUser(ctx, user)
+	return user, err
+}
+
+func (u *UserManager) Register(ctx context.Context, cred *models.UserCred) (*models.User, error) {
+	var err error
+	user := &models.User{ID: cred.Login}
+	user.Hash, err = makeHash(cred)
+	if err != nil {
+		return user, err
+	}
+	err = u.storage.CreateUser(ctx, user)
+	return user, err
+}
+
+func (u *UserManager) CreateJWT(user *models.User) (string, error) {
+	_, tokenString, err := u.tokenAuth.Encode(map[string]interface{}{"user_id": user.ID})
+	return tokenString, err
+}
+
+func (u *UserManager) CheckUserExist(ctx context.Context, user *models.User) error {
+	return u.storage.CheckUserExist(ctx, user)
+}
+
+func (u *UserManager) GetTokenAuth() *jwtauth.JWTAuth {
+	return u.tokenAuth
+}
+
+func makeHash(cred *models.UserCred) (string, error) {
 	hash := ``
-	h := hmac.New(sha256.New, []byte(pass))
-	_, err := h.Write([]byte(id))
+	h := hmac.New(sha256.New, []byte(cred.Password))
+	_, err := h.Write([]byte(cred.Login))
 	if err != nil {
 		return ``, err
 	}

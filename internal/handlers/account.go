@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -9,16 +8,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Ssnakerss/gophermart/internal/account"
-	"github.com/Ssnakerss/gophermart/internal/db"
 	"github.com/Ssnakerss/gophermart/internal/models"
 	"github.com/Ssnakerss/gophermart/internal/types"
 )
 
-func GetAPIUserBalance(w http.ResponseWriter, r *http.Request) {
-	ac := account.NewAccountKeeper(db.New(db.ConString, db.Info))
-	// currentUser := string(r.Context().Value("UserID"))
-	acc, err := ac.GetAccount(context.TODO(), "ivan")
+func (hm *HandlerMaster) GetAPIUserBalance(w http.ResponseWriter, r *http.Request) {
+
+	acc, err := hm.accountKeeper.GetAccount(hm.rootAppContext, hm.currentUser.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		slog.Error(err.Error())
@@ -33,7 +29,7 @@ func GetAPIUserBalance(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 
-func PostAPIUserBalanceWithdraw(w http.ResponseWriter, r *http.Request) {
+func (hm *HandlerMaster) PostAPIUserBalanceWithdraw(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		slog.Warn("request body read error")
@@ -54,12 +50,11 @@ func PostAPIUserBalanceWithdraw(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tr.Indicator = "C" //withdrawal
-	tr.UserID = "ivan" //current user
+	tr.Indicator = "C"            //withdrawal
+	tr.UserID = hm.currentUser.ID //current user
 	tr.TimeStamp = types.TimeRFC3339(time.Now())
-	ac := account.NewAccountKeeper(db.New(db.ConString, db.Info))
-	err = ac.PostTransaction(context.TODO(), &tr)
 
+	err = hm.accountKeeper.PostTransaction(hm.rootAppContext, &tr)
 	if err != nil {
 		if errors.Is(err, models.ErrInsufficientFunds) {
 			http.Error(w, "insufficient funds", http.StatusPaymentRequired)
@@ -72,9 +67,9 @@ func PostAPIUserBalanceWithdraw(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetAPIUserWithdrawals(w http.ResponseWriter, r *http.Request) {
-	ac := account.NewAccountKeeper(db.New(db.ConString, db.Info))
-	trs := ac.GetWithdrawHistory(context.TODO(), "ivan") //current user
+func (hm *HandlerMaster) GetAPIUserWithdrawals(w http.ResponseWriter, r *http.Request) {
+
+	trs := hm.accountKeeper.GetWithdrawHistory(hm.rootAppContext, hm.currentUser.ID) //current user
 	if len(trs) == 0 {
 		http.Error(w, "no withdrawals", http.StatusNoContent)
 		slog.Warn("no withdrawals")

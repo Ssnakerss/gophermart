@@ -8,7 +8,6 @@ import (
 
 	"github.com/Ssnakerss/gophermart/internal/models"
 	"github.com/Ssnakerss/gophermart/internal/types"
-	"github.com/Ssnakerss/gophermart/internal/user"
 )
 
 type OrderProcessor struct {
@@ -24,7 +23,11 @@ func NewOrderProcessor(st models.OrderStorage) *OrderProcessor {
 // создаем новый заказ с проверками
 // проверка луна - зашита в номер заказа
 // так что явно проверяем на дубликаты
-func (op *OrderProcessor) NewOrder(ctx context.Context, orderNum string, user *user.User) *models.Order {
+func (op *OrderProcessor) NewOrder(
+	ctx context.Context,
+	orderNum string,
+	user *models.User) *models.Order {
+
 	var o models.Order
 	o.TimeStamp = types.TimeRFC3339(time.Now())
 	ordernum, err := strconv.ParseUint(string(orderNum), 10, 64)
@@ -46,7 +49,7 @@ func (op *OrderProcessor) NewOrder(ctx context.Context, orderNum string, user *u
 	return &o
 }
 
-func (op *OrderProcessor) AllOrders(ctx context.Context, user *user.User) []models.Order {
+func (op *OrderProcessor) AllOrders(ctx context.Context, user *models.User) []models.Order {
 	o := models.Order{
 		UserID: user.ID,
 	}

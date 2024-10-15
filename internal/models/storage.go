@@ -19,3 +19,9 @@ type AccountStorage interface {
 	PostTransaction(ctx context.Context, transaction *Transaction) error    //проводка по счету
 	GetHistory(ctx context.Context, transaction *Transaction) []Transaction //возвращает историю операций
 }
+
+type UserStorage interface {
+	GetUser(ctx context.Context, user *User) error        //возвращает пользователя по id
+	CreateUser(ctx context.Context, user *User) error     //создает пользователя
+	CheckUserExist(ctx context.Context, user *User) error //проверяем есть ли пользователь с таким имененм
+}

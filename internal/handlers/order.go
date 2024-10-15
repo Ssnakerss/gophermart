@@ -1,18 +1,13 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"io"
 	"log/slog"
 	"net/http"
-
-	"github.com/Ssnakerss/gophermart/internal/db"
-	"github.com/Ssnakerss/gophermart/internal/order"
-	"github.com/Ssnakerss/gophermart/internal/user"
 )
 
-func PostAPIUserOrders(w http.ResponseWriter, r *http.Request) {
+func (hm *HandlerMaster) PostAPIUserOrders(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		slog.Warn("request body read error")
@@ -20,17 +15,14 @@ func PostAPIUserOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//базовые проверки пройдены, создает заказ
-	op := order.NewOrderProcessor(db.New(db.ConString, db.Info))
-	order := op.NewOrder(context.TODO(), string(body), &user.User{ID: "dummy", IsAuthorized: true})
-
+	order := hm.orderProcessoe.NewOrder(hm.rootAppContext, string(body), hm.currentUser)
 	w.WriteHeader(order.Status.ResponseCode())
 	w.Write([]byte(order.Status))
 }
 
-func GetAPIUserOrders(w http.ResponseWriter, r *http.Request) {
+func (hm *HandlerMaster) GetAPIUserOrders(w http.ResponseWriter, r *http.Request) {
 	//получаем список ордеров по текущему пользователю
-	op := order.NewOrderProcessor(db.New(db.ConString, db.Info))
-	orders := op.AllOrders(context.TODO(), &user.User{ID: "dummy", IsAuthorized: true})
+	orders := hm.orderProcessoe.AllOrders(hm.rootAppContext, hm.currentUser)
 	if len(orders) == 0 {
 		w.WriteHeader(http.StatusNoContent) //204
 		return
@@ -42,5 +34,4 @@ func GetAPIUserOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(body)
-
 }
