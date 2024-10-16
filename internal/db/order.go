@@ -25,3 +25,13 @@ func (db *GormDB) GetAllOrders(ctx context.Context, order *models.Order) []model
 	db.DB.WithContext(ctx).Order("time_stamp DESC").Find(&orders, order)
 	return orders
 }
+
+func (db *GormDB) GetOrdersByStatus(ctx context.Context, ordersToFind []models.Order) []models.Order {
+	var result []models.Order
+	var orders []models.Order
+	for _, o := range ordersToFind {
+		db.DB.WithContext(ctx).Order("time_stamp ASC").Find(&orders, o)
+		result = append(result, orders...)
+	}
+	return result
+}

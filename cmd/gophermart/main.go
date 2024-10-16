@@ -7,10 +7,14 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/Ssnakerss/gophermart/internal/logger"
 	"github.com/Ssnakerss/gophermart/internal/server"
 )
 
 func main() {
+	logger.Setup("DEV")
+	slog.Info("server starting")
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	go func() {
@@ -22,7 +26,6 @@ func main() {
 		cancel()
 	}()
 
-	slog.Info("server starting")
 	slog.Warn("server", "status", server.RunWithContext(ctx, ":8080"))
 	slog.Info("server stopped")
 }

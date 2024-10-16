@@ -11,3 +11,5 @@ var ErrInsufficientFunds = errors.New("insufficient funds")
 var ErrUserNotFound = errors.New("user not found")
 
 var ErrUserExists = errors.New("user already exists")
+
+var ErrStatusBadRequest = errors.New("bad request")

@@ -43,6 +43,10 @@ func (on *OrderNum) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+func (on *OrderNum) String() string {
+	return fmt.Sprintf("%d", *on) //переводим в строку
+}
+
 // --------------------------------------------------------------------------------
 // кастомный тип для времени чтобы настроит маршаллинг в формат RFC3339
 type TimeRFC3339 time.Time
@@ -73,6 +77,49 @@ func (t TimeRFC3339) MarshalJSON() ([]byte, error) {
 }
 
 // --------------------------------------------------------------------------------
+// https://golangprojectstructure.com/representing-money-and-currency-go-code/
+// тип для хранение бонусов
+// использем int
+type Bonus int64
+
+func (b *Bonus) MarshalJSON() ([]byte, error) {
+	bb := strconv.FormatFloat(b.Get(), 'f', 2, 64)
+	return []byte(fmt.Sprintf(`"%s"`, bb)), nil
+}
+
+func (b *Bonus) UnmarshalJSON(bb []byte) error {
+	s := strings.Trim(string(bb), "\"") //убираем кавычки
+	if s == "null" {
+		return nil
+	}
+	f, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return err
+	}
+	b.Set(f)
+	return nil
+
+}
+
+func (b *Bonus) Set(fb float64) {
+	*b = Bonus(uint64(fb * 100))
+}
+func (b *Bonus) Get() float64 {
+	return float64(uint64(*b)) / 100
+}
+func (b *Bonus) Add(fb float64) {
+	b.Set(b.Get() + fb)
+}
+func (b *Bonus) Sub(fb float64) error {
+	f := b.Get() - fb
+	if f < 0 {
+		return fmt.Errorf("got negative value %f ", f)
+	}
+	b.Set(f)
+	return nil
+}
+
+// --------------------------------------------------------------------------------
 // статус заказа с сопоставлением кода ответа
 type OrderStatus string
 
@@ -89,10 +136,13 @@ const (
 
 // Статусы принятых заказаов
 const (
-	//такие заказы в историю по счету не пишем
+	//промежуточные статусы
 	NEW        OrderStatus = "NEW"        //заказ загружен но еще не приянт в обработку
+	REGISTERED OrderStatus = "REGISTERED" //заказ зарегистрирован но бонус не расчитан
 	PROCESSING OrderStatus = "PROCESSING" //заказ в оборботке бонусы расчитыватся
-	INVALID    OrderStatus = "INVALID"    //система расчета бонусов отказала в расчете
+
+	//финальлные статусы
+	INVALID OrderStatus = "INVALID" //система расчета бонусов отказала в расчете
 
 	//такие заказы пишем и в историю по счету
 	//Debit-Credit indicator = D
@@ -125,28 +175,4 @@ func (os OrderStatus) ResponseCode() int {
 	default:
 		return 0
 	}
-}
-
-// --------------------------------------------------------------------------------
-// https://golangprojectstructure.com/representing-money-and-currency-go-code/
-// тип для хранение бонусов
-// использем int
-type Bonus int64
-
-func (b *Bonus) Set(fb float64) {
-	*b = Bonus(uint64(fb * 100))
-}
-func (b *Bonus) Get() float64 {
-	return float64(uint64(*b)) / 100
-}
-func (b *Bonus) Add(fb float64) {
-	b.Set(b.Get() + fb)
-}
-func (b *Bonus) Sub(fb float64) error {
-	f := b.Get() - fb
-	if f < 0 {
-		return fmt.Errorf("got negative value %f ", f)
-	}
-	b.Set(f)
-	return nil
 }

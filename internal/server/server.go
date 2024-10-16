@@ -19,7 +19,7 @@ func RunWithContext(ctx context.Context, endPoint string) error {
 	if err != nil {
 		log.Fatal("db init failed", err)
 	}
-	slog.Info("migrate data chema")
+	slog.Info("migrate data schema")
 	storage.Migrate(ctx)
 	if err != nil {
 		slog.Error(err.Error())

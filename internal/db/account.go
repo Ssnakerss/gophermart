@@ -83,6 +83,11 @@ func (db *GormDB) PostTransaction(ctx context.Context, accTransaction *models.Tr
 	return terr
 }
 
+// создание счетя для новых пользователей
+func (db *GormDB) CreateAccount(ctx context.Context, account *models.Account) error {
+	return db.DB.WithContext(ctx).Create(account).Error
+}
+
 // Получаем текущий баланс пользователя
 func (db *GormDB) GetAccount(ctx context.Context, account *models.Account) error {
 	return db.DB.WithContext(ctx).First(account).Error

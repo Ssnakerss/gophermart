@@ -16,8 +16,14 @@ func NewAccountKeeper(st models.AccountStorage) *AccountKeeper {
 	return &ac
 }
 
-func (ac *AccountKeeper) GetAccount(ctx context.Context, id string) (*models.Account, error) {
-	acc := models.Account{UserID: id}
+func (ac *AccountKeeper) CreateAccount(ctx context.Context, userID string) (*models.Account, error) {
+	acc := models.Account{UserID: userID}
+	err := ac.storage.CreateAccount(ctx, &acc)
+	return &acc, err
+}
+
+func (ac *AccountKeeper) GetAccount(ctx context.Context, userID string) (*models.Account, error) {
+	acc := models.Account{UserID: userID}
 	err := ac.storage.GetAccount(ctx, &acc)
 	return &acc, err
 }

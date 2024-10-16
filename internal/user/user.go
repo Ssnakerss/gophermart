@@ -18,7 +18,7 @@ type UserManager struct {
 func NewUserManager(storage models.UserStorage) *UserManager {
 	return &UserManager{
 		storage:   storage,
-		tokenAuth: jwtauth.New("HS256", []byte("secret_key_here"), nil),
+		tokenAuth: jwtauth.New("HS256", []byte("secret_key_here!"), nil), //TODO - сделать секрет ки
 	}
 }
 
@@ -42,7 +42,9 @@ func (u *UserManager) Register(ctx context.Context, cred *models.UserCred) (*mod
 	if err != nil {
 		return user, err
 	}
+	//создаем пользователя
 	err = u.storage.CreateUser(ctx, user)
+
 	return user, err
 }
 
