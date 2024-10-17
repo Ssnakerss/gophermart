@@ -26,6 +26,7 @@ func (hm *HandlerMaster) GetAPIUserBalance(w http.ResponseWriter, r *http.Reques
 		slog.Error(err.Error())
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
 }
 
@@ -82,6 +83,6 @@ func (hm *HandlerMaster) GetAPIUserWithdrawals(w http.ResponseWriter, r *http.Re
 		slog.Error(err.Error())
 		return
 	}
-
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
 }

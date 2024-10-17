@@ -33,5 +33,6 @@ func (hm *HandlerMaster) GetAPIUserOrders(w http.ResponseWriter, r *http.Request
 		w.WriteHeader(http.StatusInternalServerError) //500
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
 }
