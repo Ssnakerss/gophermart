@@ -68,7 +68,7 @@ func (hm *HandlerMaster) PostAPIUserRegister(w http.ResponseWriter, r *http.Requ
 
 	hm.currentUser, err = hm.UserManager.Register(hm.rootAppContext, cr)
 	if err != nil {
-		if errors.Is(err, models.ErrUserExists) {
+		if errors.Is(err, models.ErrUserAlreadyExists) {
 			slog.Warn("register error", "user already exist", err.Error())
 			http.Error(w, "user already exist", http.StatusConflict) //409
 			return

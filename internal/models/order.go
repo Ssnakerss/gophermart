@@ -8,4 +8,5 @@ type Order struct {
 	Accrual   types.Bonus       `json:"accrual"`                   //размер начисленного бонуса
 	Status    types.OrderStatus `gorm:"index" json:"status"`       //статус заказа
 	TimeStamp types.TimeRFC3339 `json:"uploaded_at"`               //время поступления заказа
+	UpdatedAt types.TimeRFC3339 `json:"-"`                         //дата последнего обновления
 }

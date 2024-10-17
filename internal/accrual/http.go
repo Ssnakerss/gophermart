@@ -5,6 +5,8 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/Ssnakerss/gophermart/internal/models"
 	"github.com/Ssnakerss/gophermart/internal/types"
@@ -28,20 +30,45 @@ func (ha *HTTPAccrualsystem) GetAccrual(order types.OrderNum) (*models.AccrualRe
 		return nil, err
 	}
 	defer response.Body.Close()
+
+	//провери на статус ответа 429
+	//надо скорректировать размер батча, чтобы не было ошибок
+	if response.StatusCode == http.StatusTooManyRequests {
+		body, err := io.ReadAll(response.Body)
+		if err != nil {
+			return nil, models.ErrReadBody
+		}
+		//пытаемся из текста ошибки достать максимальное количество запросов
+		p := strings.Fields(string(body))
+		if len(p) < 4 {
+			return nil, models.ErrConvertBody
+		}
+		maxReqNum, err := strconv.ParseInt(p[3], 10, 32)
+		if err != nil {
+			return nil, models.ErrConvertBody
+		}
+		//передаем максимальное количество запросов в ответе со статусом "E"
+		ar := models.AccrualResponse{
+			Order:   0,
+			Status:  "E",
+			Accrual: types.Bonus(maxReqNum),
+		}
+		return &ar, models.ErrTooManyRequests
+	}
+	//все прочие ошибки не обрабатываем
 	if response.StatusCode != http.StatusOK {
 		return nil, errors.New(response.Status) // TODO: change this to your own error
 	}
 
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
-		return nil, errors.New("error reading body") // TODO: change this to your own error
+		return nil, models.ErrReadBody
 	}
 	ar := models.AccrualResponse{}
 
 	err = json.Unmarshal(body, &ar)
 	if err != nil {
-		return nil, errors.New("error unmarshalling body") // TODO: change this to your own error
-
+		return nil, models.ErrConvertBody
 	}
 
 	return &ar, nil

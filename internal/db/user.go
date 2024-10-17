@@ -15,7 +15,7 @@ func (db *GormDB) CreateUser(ctx context.Context, user *models.User) error {
 	if errors.As(err, &pgErr) {
 		//если пользователь уже существует, возвращаем ошибку
 		if pgErr.Code == "23505" {
-			return models.ErrUserExists
+			return models.ErrUserAlreadyExists
 		}
 	}
 	return err
