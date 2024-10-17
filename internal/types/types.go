@@ -87,8 +87,8 @@ func (t TimeRFC3339) MarshalJSON() ([]byte, error) {
 type Bonus int64
 
 func (b *Bonus) MarshalJSON() ([]byte, error) {
-	bb := strconv.FormatFloat(b.Get(), 'f', 2, 64)
-	return []byte(fmt.Sprintf(`"%s"`, bb)), nil
+	// bb := strconv.FormatFloat(b.Get(), 'f', 2, 64)
+	return []byte(fmt.Sprintf(`%f`, b.Get())), nil
 }
 
 func (b *Bonus) UnmarshalJSON(bb []byte) error {
