@@ -28,7 +28,7 @@ func RunWithContext(ctx context.Context, cfg *flags.AppConfig) error {
 		dbLogLevel = db.Warn
 	}
 	slog.Info("initialize database", "level", dbLogLevel)
-	storage, err := db.New(cfg.DATABASE_URI, dbLogLevel)
+	storage, err := db.New(cfg.DatabaseURI, dbLogLevel)
 	if err != nil {
 		slog.Error("failed to initialize database", "error", err.Error())
 		os.Exit(1)
@@ -44,7 +44,7 @@ func RunWithContext(ctx context.Context, cfg *flags.AppConfig) error {
 	router := router.New(handlerMaster)
 	//созджаем сервер
 	s := &http.Server{
-		Addr:    cfg.RUN_ADDRESS,
+		Addr:    cfg.RunAddress,
 		Handler: router,
 	}
 
@@ -54,7 +54,7 @@ func RunWithContext(ctx context.Context, cfg *flags.AppConfig) error {
 	case "DEV": //для разработки
 		accrualService = mock.NewMockAccrualService(ctx)
 	case "PROD": //для продакшена
-		accrualService = accrual.NewHTTPAccrualsystem(cfg.ACCRUAL_SYSTEM_ADDRESS)
+		accrualService = accrual.NewHTTPAccrualsystem(cfg.AccrualSystemAddress)
 	}
 	//
 	ag := accrual.NewAccrualGetter(accrualService, storage)

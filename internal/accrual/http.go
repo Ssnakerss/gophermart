@@ -13,7 +13,7 @@ import (
 	"github.com/Ssnakerss/gophermart/internal/types"
 )
 
-const ApiUri = "/api/orders"
+const APIURI = "/api/orders"
 
 type HTTPAccrualsystem struct {
 	endPoint string
@@ -24,7 +24,7 @@ func NewHTTPAccrualsystem(endPoint string) *HTTPAccrualsystem {
 }
 
 func (ha *HTTPAccrualsystem) GetAccrual(order types.OrderNum) (*models.AccrualResponse, error) {
-	url := ha.endPoint + ApiUri + "/" + order.String()
+	url := ha.endPoint + APIURI + "/" + order.String()
 
 	response, err := http.Get(url)
 	if err != nil {
