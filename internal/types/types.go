@@ -43,6 +43,10 @@ func (on *OrderNum) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+func (on *OrderNum) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`"%d"`, *on)), nil
+}
+
 func (on *OrderNum) String() string {
 	return fmt.Sprintf("%d", *on) //переводим в строку
 }
