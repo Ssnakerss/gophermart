@@ -21,7 +21,7 @@ func (db *GormDB) PostTransaction(ctx context.Context, accTransaction *models.Tr
 	}
 
 	col := ""
-	colSql := ""
+	colSQL := ""
 
 	//TODO при ошибке записать транзакцию в журнал	со статусом E
 	var terr error
@@ -35,7 +35,7 @@ func (db *GormDB) PostTransaction(ctx context.Context, accTransaction *models.Tr
 				return err
 			}
 			col = "debit"
-			colSql = "debit + ?"
+			colSQL = "debit + ?"
 		//списание со счета
 		case "C":
 			result := tx.Model(&account).
@@ -50,7 +50,7 @@ func (db *GormDB) PostTransaction(ctx context.Context, accTransaction *models.Tr
 			}
 
 			col = "credit"
-			colSql = "credit + ?"
+			colSQL = "credit + ?"
 		}
 
 		if terr == models.ErrInsufficientFunds {
@@ -62,7 +62,7 @@ func (db *GormDB) PostTransaction(ctx context.Context, accTransaction *models.Tr
 		}
 		//если транзакция обновила баланс успешно - обноаляем и пола счета с суммой списани / зачисления
 		if accTransaction.Indicator != "E" {
-			err = tx.Model(&account).Update(col, gorm.Expr(colSql, accTransaction.Bonus)).Error
+			err = tx.Model(&account).Update(col, gorm.Expr(colSQL, accTransaction.Bonus)).Error
 		}
 
 		if err != nil {

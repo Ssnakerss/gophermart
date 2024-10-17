@@ -40,6 +40,8 @@ func (ag *AccrualGetter) GetAccrual(ctx context.Context, orderToCheck *models.Or
 }
 
 func (ag *AccrualGetter) UpdateOrderStatus(ctx context.Context, orderToUpdate *models.Order) error {
+
+	//по хорошему надо это делать в одной транзакции
 	err := ag.storage.SaveOrder(ctx, orderToUpdate)
 	if err != nil {
 		return err
