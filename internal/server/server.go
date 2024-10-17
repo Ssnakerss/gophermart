@@ -2,43 +2,61 @@ package server
 
 import (
 	"context"
-	"log"
 	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/Ssnakerss/gophermart/internal/accrual"
 	"github.com/Ssnakerss/gophermart/internal/db"
+	"github.com/Ssnakerss/gophermart/internal/flags"
 	"github.com/Ssnakerss/gophermart/internal/handlers"
 	"github.com/Ssnakerss/gophermart/internal/mock"
 	"github.com/Ssnakerss/gophermart/internal/router"
 	"golang.org/x/sync/errgroup"
 )
 
-func RunWithContext(ctx context.Context, endPoint string) error {
+func RunWithContext(ctx context.Context, cfg *flags.AppConfig) error {
+	slog.Info("startign server", "config", cfg)
+
 	slog.Info("initialize storage")
-	storage, err := db.New(db.ConString, db.Warn)
+	var dbLogLevel db.LogLevel
+	switch cfg.ENV {
+	case "DEV": //для разработки
+		dbLogLevel = db.Info
+	case "PROD": //для продакшена
+		dbLogLevel = db.Warn
+	}
+	slog.Info("initialize database", "level", dbLogLevel)
+	storage, err := db.New(cfg.DATABASE_URI, dbLogLevel)
 	if err != nil {
-		log.Fatal("db init failed", err)
+		slog.Error("failed to initialize database", "error", err.Error())
+		os.Exit(1)
 	}
 	slog.Info("migrate data schema")
 	storage.Migrate(ctx)
 	if err != nil {
-		slog.Error(err.Error())
+		slog.Error("failed to migrate data schema", "error", err.Error())
+		os.Exit(1)
 	}
 
 	handlerMaster := handlers.NewMaster(ctx, storage)
 	router := router.New(handlerMaster)
 	//созджаем сервер
 	s := &http.Server{
-		Addr:    endPoint,
+		Addr:    cfg.RUN_ADDRESS,
 		Handler: router,
 	}
 
 	//создаем обработчик для работы с системой бонусов
-	// accrualService := accrual.NewHTTPAccrualsystem("accrual_endpoint")
-	accrualService := mock.NewMockAccrualService(ctx)
-
+	var accrualService accrual.AccrualService
+	switch cfg.ENV {
+	case "DEV": //для разработки
+		accrualService = mock.NewMockAccrualService(ctx)
+	case "PROD": //для продакшена
+		accrualService = accrual.NewHTTPAccrualsystem(cfg.ACCRUAL_SYSTEM_ADDRESS)
+	}
+	//
 	ag := accrual.NewAccrualGetter(accrualService, storage)
 
 	g, gCtx := errgroup.WithContext(ctx)

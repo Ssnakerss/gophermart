@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/Ssnakerss/gophermart/internal/flags"
 	"github.com/Ssnakerss/gophermart/internal/logger"
 	"github.com/Ssnakerss/gophermart/internal/server"
 )
@@ -14,6 +15,13 @@ import (
 func main() {
 	logger.Setup("DEV")
 	slog.Info("server starting")
+
+	slog.Info("reading configuration")
+	appCfg := flags.NewAppConfig()
+	if appCfg == nil {
+		slog.Error("failed to parse flags")
+		os.Exit(1)
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -26,6 +34,6 @@ func main() {
 		cancel()
 	}()
 
-	slog.Warn("server", "status", server.RunWithContext(ctx, ":8080"))
+	slog.Warn("server", "status", server.RunWithContext(ctx, appCfg))
 	slog.Info("server stopped")
 }

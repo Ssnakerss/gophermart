@@ -10,16 +10,16 @@ import (
 	"github.com/Ssnakerss/gophermart/internal/types"
 )
 
-type AccrualSystem interface {
+type AccrualService interface {
 	GetAccrual(order types.OrderNum) (*models.AccrualResponse, error)
 }
 
 type AccrualGetter struct {
-	accSystem AccrualSystem
+	accSystem AccrualService
 	storage   models.OrderStorage
 }
 
-func NewAccrualGetter(accSystem AccrualSystem, storage models.OrderStorage) *AccrualGetter {
+func NewAccrualGetter(accSystem AccrualService, storage models.OrderStorage) *AccrualGetter {
 	return &AccrualGetter{
 		accSystem: accSystem,
 		storage:   storage,
