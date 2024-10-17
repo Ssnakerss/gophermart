@@ -14,6 +14,8 @@ type OrderStorage interface {
 	GetAllOrders(ctx context.Context, order *Order) []Order
 
 	GetOrdersByStatus(ctx context.Context, order []Order) []Order //возвращает заказы по статусу
+	//TODO пересмотреть интерфейсы
+	PostTransaction(ctx context.Context, transaction *Transaction) error //проводка по счету
 }
 
 type AccountStorage interface {

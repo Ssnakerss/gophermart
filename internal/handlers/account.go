@@ -59,7 +59,7 @@ func (hm *HandlerMaster) PostAPIUserBalanceWithdraw(w http.ResponseWriter, r *ht
 	err = hm.accountKeeper.PostTransaction(hm.rootAppContext, &tr)
 	if err != nil {
 		if errors.Is(err, models.ErrInsufficientFunds) {
-			http.Error(w, "insufficient funds", http.StatusPaymentRequired)
+			http.Error(w, "insufficient funds", http.StatusPaymentRequired) //402
 			slog.Warn(err.Error())
 			return
 		}

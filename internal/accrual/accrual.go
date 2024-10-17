@@ -40,7 +40,18 @@ func (ag *AccrualGetter) GetAccrual(ctx context.Context, orderToCheck *models.Or
 }
 
 func (ag *AccrualGetter) UpdateOrderStatus(ctx context.Context, orderToUpdate *models.Order) error {
-	return ag.storage.SaveOrder(ctx, orderToUpdate)
+	err := ag.storage.SaveOrder(ctx, orderToUpdate)
+	if err != nil {
+		return err
+	}
+	tr := models.Transaction{
+		UserID:      orderToUpdate.UserID,
+		OrderNumber: orderToUpdate.Number,
+		Bonus:       orderToUpdate.Accrual, //TODO привести имена полей в моделях к одному виду
+		Indicator:   "D",
+	}
+	err = ag.storage.PostTransaction(ctx, &tr)
+	return err
 }
 
 func (ag *AccrualGetter) UpdateAccruals(ctx context.Context, batchSize uint) (uint, error) {
