@@ -102,7 +102,6 @@ func (b *Bonus) UnmarshalJSON(bb []byte) error {
 	}
 	b.Set(f)
 	return nil
-
 }
 
 func (b *Bonus) Set(fb float64) {
