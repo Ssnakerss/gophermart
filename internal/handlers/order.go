@@ -30,10 +30,11 @@ func (hm *HandlerMaster) GetAPIUserOrders(w http.ResponseWriter, r *http.Request
 
 	body, err := json.Marshal(orders)
 	if err != nil {
-		slog.Error("GetAPIUserOrders", "error", err.Error())
-		w.WriteHeader(http.StatusInternalServerError) //500
+		slog.Error("GetAPIUserOrders", "error", err.Error()) //500
+		w.WriteHeader(http.StatusInternalServerError)        //500
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK) //200
 	w.Write(body)
 }

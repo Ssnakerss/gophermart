@@ -27,6 +27,7 @@ func (hm *HandlerMaster) GetAPIUserBalance(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK) //200
 	w.Write(body)
 }
 

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
@@ -12,7 +13,6 @@ import (
 	"github.com/Ssnakerss/gophermart/internal/types"
 )
 
-const ServerAddr = "localhost:8080" // TODO: change this to your own endpoint
 const ApiUri = "/api/orders"
 
 type HTTPAccrualsystem struct {
@@ -24,9 +24,11 @@ func NewHTTPAccrualsystem(endPoint string) *HTTPAccrualsystem {
 }
 
 func (ha *HTTPAccrualsystem) GetAccrual(order types.OrderNum) (*models.AccrualResponse, error) {
-	url := ha.endPoint + "/" + order.String()
+	url := ha.endPoint + ApiUri + "/" + order.String()
+
 	response, err := http.Get(url)
 	if err != nil {
+		slog.Error("HTTPAccrualsystem.GetAccrual: " + err.Error())
 		return nil, err
 	}
 	defer response.Body.Close()
@@ -64,14 +66,15 @@ func (ha *HTTPAccrualsystem) GetAccrual(order types.OrderNum) (*models.AccrualRe
 	if err != nil {
 		return nil, models.ErrReadBody
 	}
+
 	ar := models.AccrualResponse{}
 
 	err = json.Unmarshal(body, &ar)
+
 	if err != nil {
 		return nil, models.ErrConvertBody
 	}
 
 	return &ar, nil
-	// TODO: implement this
 
 }

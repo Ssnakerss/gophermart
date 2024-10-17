@@ -70,6 +70,7 @@ func (ag *AccrualGetter) UpdateAccruals(ctx context.Context, batchSize uint) (ui
 
 		if accrual.Status != order.Status {
 			order.Status = accrual.Status
+			order.Accrual = accrual.Accrual
 			err = ag.UpdateOrderStatus(ctx, &order)
 			if err != nil {
 				return batchSize, err
