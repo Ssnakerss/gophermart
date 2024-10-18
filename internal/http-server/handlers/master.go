@@ -3,11 +3,11 @@ package handlers
 import (
 	"context"
 
-	"github.com/Ssnakerss/gophermart/internal/account"
 	"github.com/Ssnakerss/gophermart/internal/db"
 	"github.com/Ssnakerss/gophermart/internal/models"
-	"github.com/Ssnakerss/gophermart/internal/order"
-	"github.com/Ssnakerss/gophermart/internal/user"
+	"github.com/Ssnakerss/gophermart/internal/proc/account"
+	"github.com/Ssnakerss/gophermart/internal/proc/order"
+	"github.com/Ssnakerss/gophermart/internal/proc/user"
 )
 
 type HandlerMaster struct {
@@ -33,13 +33,3 @@ func NewMaster(ctx context.Context, st *db.GormDB) *HandlerMaster {
 
 	return &hm
 }
-
-//TODO - implement
-
-// func (hm *HandlerMaster) GetTokenAuth() *jwtauth.JWTAuth {
-// 	return hm.userManager.GetTokenAuth()
-// }
-
-// func (hm HandlerMaster) GetUserChecker() http.Handler(
-// 	return userManager.AuthorizeUser
-// )

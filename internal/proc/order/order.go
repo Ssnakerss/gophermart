@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Ssnakerss/gophermart/internal/apperrs"
 	"github.com/Ssnakerss/gophermart/internal/models"
 	"github.com/Ssnakerss/gophermart/internal/types"
 )
@@ -62,9 +63,8 @@ func (op *OrderProcessor) CheckIfExist(ctx context.Context, o *models.Order) typ
 	userID := o.UserID
 	//если заказа нет в хранилище - вернется ошибка
 	//значит заказ новый
-	//TODO - разобрать ошибки -  может быть 500 Internal server error
 	if err := op.storage.GetOrder(ctx, o); err != nil {
-		if errors.Is(err, models.ErrRecordNotFound) {
+		if errors.Is(err, apperrs.ErrRecordNotFound) {
 			return types.NEW
 		}
 		return types.ERROR //какая-то другая ошибка, будем считать что Internal Server Error

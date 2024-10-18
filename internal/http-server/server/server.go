@@ -7,12 +7,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/Ssnakerss/gophermart/internal/accrual"
+	"github.com/Ssnakerss/gophermart/internal/accrualsrv"
 	"github.com/Ssnakerss/gophermart/internal/db"
 	"github.com/Ssnakerss/gophermart/internal/flags"
-	"github.com/Ssnakerss/gophermart/internal/handlers"
+	"github.com/Ssnakerss/gophermart/internal/http-server/handlers"
+	"github.com/Ssnakerss/gophermart/internal/http-server/router"
 	"github.com/Ssnakerss/gophermart/internal/mock"
-	"github.com/Ssnakerss/gophermart/internal/router"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -49,19 +49,19 @@ func RunWithContext(ctx context.Context, cfg *flags.AppConfig) error {
 	}
 
 	//создаем обработчик для работы с системой бонусов
-	var accrualService accrual.AccrualService
+	var accrualService accrualsrv.AccrualService
 	switch cfg.ENV {
 	case "DEV": //для разработки
 		accrualService = mock.NewMockAccrualService(ctx)
 	case "PROD": //для продакшена
-		accrualService = accrual.NewHTTPAccrualsystem(cfg.AccrualSystemAddress)
+		accrualService = accrualsrv.NewHTTPAccrualsystem(cfg.AccrualSystemAddress)
 	}
 	//
-	ag := accrual.NewAccrualGetter(accrualService, storage)
+	ag := accrualsrv.NewAccrualGetter(accrualService, storage)
 
 	g, gCtx := errgroup.WithContext(ctx)
 	g.Go(func() error {
-		return ag.Run(ctx, accrual.RunInterval, accrual.BatchSize)
+		return ag.Run(ctx, accrualsrv.RunInterval, accrualsrv.BatchSize)
 	})
 
 	g.Go(func() error {

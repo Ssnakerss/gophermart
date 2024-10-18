@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Ssnakerss/gophermart/internal/apperrs"
 	"github.com/Ssnakerss/gophermart/internal/models"
 	"github.com/Ssnakerss/gophermart/internal/types"
 )
@@ -58,7 +59,7 @@ func (hm *HandlerMaster) PostAPIUserBalanceWithdraw(w http.ResponseWriter, r *ht
 
 	err = hm.accountKeeper.PostTransaction(hm.rootAppContext, &tr)
 	if err != nil {
-		if errors.Is(err, models.ErrInsufficientFunds) {
+		if errors.Is(err, apperrs.ErrInsufficientFunds) {
 			http.Error(w, "insufficient funds", http.StatusPaymentRequired) //402
 			slog.Warn(err.Error())
 			return

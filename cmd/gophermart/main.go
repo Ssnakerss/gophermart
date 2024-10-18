@@ -8,8 +8,8 @@ import (
 	"syscall"
 
 	"github.com/Ssnakerss/gophermart/internal/flags"
+	"github.com/Ssnakerss/gophermart/internal/http-server/server"
 	"github.com/Ssnakerss/gophermart/internal/logger"
-	"github.com/Ssnakerss/gophermart/internal/server"
 )
 
 func main() {
@@ -27,7 +27,11 @@ func main() {
 	defer cancel()
 	go func() {
 		exit := make(chan os.Signal, 1)
-		signal.Notify(exit, os.Interrupt, syscall.SIGTERM)
+		signal.Notify(exit,
+			syscall.SIGHUP,
+			syscall.SIGINT,
+			syscall.SIGTERM,
+			syscall.SIGQUIT)
 		sig := <-exit
 		slog.Warn("signal received", "termination", sig)
 		slog.Info("stopping server")

@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/Ssnakerss/gophermart/internal/apperrs"
 	"github.com/Ssnakerss/gophermart/internal/models"
 )
 
@@ -16,7 +17,7 @@ func (hm *HandlerMaster) PostAPIUserLogin(w http.ResponseWriter, r *http.Request
 	cr, err := getCred(r.Body)
 	if err != nil {
 		slog.Warn("login error", "credentials", cr, "error", err.Error())
-		if errors.Is(err, models.ErrStatusBadRequest) {
+		if errors.Is(err, apperrs.ErrStatusBadRequest) {
 			http.Error(w, "body parse error", http.StatusBadRequest)
 			return
 		}
@@ -26,7 +27,7 @@ func (hm *HandlerMaster) PostAPIUserLogin(w http.ResponseWriter, r *http.Request
 
 	hm.currentUser, err = hm.UserManager.Login(hm.rootAppContext, cr)
 	if err != nil {
-		if errors.Is(err, models.ErrUserNotFound) {
+		if errors.Is(err, apperrs.ErrUserNotFound) {
 			slog.Warn("login erorr", "user not found", err.Error())
 			http.Error(w, "user not found", http.StatusUnauthorized)
 			return
@@ -58,7 +59,7 @@ func (hm *HandlerMaster) PostAPIUserRegister(w http.ResponseWriter, r *http.Requ
 	cr, err := getCred(r.Body)
 	if err != nil {
 		slog.Warn("register error", "credentials", cr, "error", err.Error())
-		if errors.Is(err, models.ErrStatusBadRequest) {
+		if errors.Is(err, apperrs.ErrStatusBadRequest) {
 			http.Error(w, "body parse error", http.StatusBadRequest)
 			return
 		}
@@ -68,7 +69,7 @@ func (hm *HandlerMaster) PostAPIUserRegister(w http.ResponseWriter, r *http.Requ
 
 	hm.currentUser, err = hm.UserManager.Register(hm.rootAppContext, cr)
 	if err != nil {
-		if errors.Is(err, models.ErrUserAlreadyExists) {
+		if errors.Is(err, apperrs.ErrUserAlreadyExists) {
 			slog.Warn("register error", "user already exist", err.Error())
 			http.Error(w, "user already exist", http.StatusConflict) //409
 			return
@@ -112,7 +113,7 @@ func getCred(rBody io.ReadCloser) (*models.UserCred, error) {
 	cr := models.UserCred{}
 	err = json.Unmarshal(body, &cr)
 	if err != nil {
-		return nil, fmt.Errorf("%w:%w", models.ErrStatusBadRequest, err)
+		return nil, fmt.Errorf("%w:%w", apperrs.ErrStatusBadRequest, err)
 	}
 	return &cr, nil
 }

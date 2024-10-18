@@ -7,6 +7,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/Ssnakerss/gophermart/internal/apperrs"
 	"github.com/Ssnakerss/gophermart/internal/models"
 	"github.com/Ssnakerss/gophermart/internal/types"
 )
@@ -61,8 +62,8 @@ func (mas *MockAccrualService) GetAccrual(order types.OrderNum) (*models.Accrual
 	if atomic.LoadInt32(&requestCounter) > maxRequestCnt {
 		ar.Order = 0
 		ar.Status = "E"
-		ar.Accrual = types.Bonus(maxRequestCnt)
-		return &ar, models.ErrTooManyRequests
+		ar.Accrual = types.Accrual(maxRequestCnt)
+		return &ar, apperrs.ErrTooManyRequests
 	}
 
 	_, status, accrual := yourAcrualIs(ar.Order)

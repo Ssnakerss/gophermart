@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/Ssnakerss/gophermart/internal/apperrs"
 	"github.com/Ssnakerss/gophermart/internal/models"
 	"gorm.io/gorm"
 )
@@ -15,7 +16,7 @@ func (db *GormDB) SaveOrder(ctx context.Context, order *models.Order) error {
 func (db *GormDB) GetOrder(ctx context.Context, order *models.Order) error {
 	err := db.DB.WithContext(ctx).First(order).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return models.ErrRecordNotFound
+		return apperrs.ErrRecordNotFound
 	}
 	return err
 }

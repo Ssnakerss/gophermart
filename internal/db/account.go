@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 
+	"github.com/Ssnakerss/gophermart/internal/apperrs"
 	"github.com/Ssnakerss/gophermart/internal/models"
 	"gorm.io/gorm"
 )
@@ -12,9 +13,8 @@ import (
 // делаем все в транзакции для сохранения целостности данных
 func (db *GormDB) PostTransaction(ctx context.Context, accTransaction *models.Transaction) error {
 
-	//TODO сделать проверку на существование аккаунта
 	if accTransaction.Indicator != "D" && accTransaction.Indicator != "C" {
-		return models.ErrInvalidIndicator
+		return apperrs.ErrInvalidIndicator
 	}
 	account := models.Account{
 		UserID: accTransaction.UserID,
@@ -23,14 +23,13 @@ func (db *GormDB) PostTransaction(ctx context.Context, accTransaction *models.Tr
 	col := ""
 	colSQL := ""
 
-	//TODO при ошибке записать транзакцию в журнал	со статусом E
 	var terr error
 	err := db.DB.Transaction(func(tx *gorm.DB) error {
 		var err error
 		switch accTransaction.Indicator {
 		//пополнение счета
 		case "D":
-			err = tx.Model(&account).Update("balance", gorm.Expr("balance + ?", accTransaction.Bonus)).Error
+			err = tx.Model(&account).Update("balance", gorm.Expr("balance + ?", accTransaction.Accrual)).Error
 			if err != nil {
 				return err
 			}
@@ -40,11 +39,11 @@ func (db *GormDB) PostTransaction(ctx context.Context, accTransaction *models.Tr
 		case "C":
 			result := tx.Model(&account).
 				//при списании надо проверить достаочно ли средств на счету
-				Where("balance >= ?", accTransaction.Bonus).
-				Update("balance", gorm.Expr("balance - ?", accTransaction.Bonus))
+				Where("balance >= ?", accTransaction.Accrual).
+				Update("balance", gorm.Expr("balance - ?", accTransaction.Accrual))
 				//если списание не прощло - ставим ошибку
 			if result.RowsAffected == 0 {
-				terr = models.ErrInsufficientFunds
+				terr = apperrs.ErrInsufficientFunds
 			} else {
 				err = result.Error
 			}
@@ -53,7 +52,7 @@ func (db *GormDB) PostTransaction(ctx context.Context, accTransaction *models.Tr
 			colSQL = "credit + ?"
 		}
 
-		if terr == models.ErrInsufficientFunds {
+		if terr == apperrs.ErrInsufficientFunds {
 			accTransaction.Indicator = "E"
 		}
 
@@ -62,7 +61,7 @@ func (db *GormDB) PostTransaction(ctx context.Context, accTransaction *models.Tr
 		}
 		//если транзакция обновила баланс успешно - обноаляем и пола счета с суммой списани / зачисления
 		if accTransaction.Indicator != "E" {
-			err = tx.Model(&account).Update(col, gorm.Expr(colSQL, accTransaction.Bonus)).Error
+			err = tx.Model(&account).Update(col, gorm.Expr(colSQL, accTransaction.Accrual)).Error
 		}
 
 		if err != nil {

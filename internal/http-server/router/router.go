@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/Ssnakerss/gophermart/internal/handlers"
+	"github.com/Ssnakerss/gophermart/internal/http-server/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/jwtauth/v5"
@@ -27,9 +27,13 @@ func New(hm *handlers.HandlerMaster) *chi.Mux {
 
 		//работа с заказамт
 		r.With(middleware.AllowContentType("text/plain")).Post("/api/user/orders", hm.PostAPIUserOrders)
-		r.Get("/api/user/orders", hm.GetAPIUserOrders)
+		//--может отдавать большие объемы данных - добавим сжатие
+		r.With(middleware.Compress(5, "application/json")).Get("/api/user/orders", hm.GetAPIUserOrders)
+
 		//работа с счетами пользователя
-		r.Get("/api/user/balance", hm.GetAPIUserBalance)
+		//--может отдавать большие объемы данных - добавим сжатие
+		r.With(middleware.Compress(5, "application/json")).Get("/api/user/balance", hm.GetAPIUserBalance)
+
 		r.With(middleware.AllowContentType("application/json")).Post("/api/user/balance/withdraw", hm.PostAPIUserBalanceWithdraw)
 		r.Get("/api/user/withdrawals", hm.GetAPIUserWithdrawals)
 	})
