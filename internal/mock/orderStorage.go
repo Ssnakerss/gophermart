@@ -21,7 +21,7 @@ func NewMockOrderStorage() *mockOrderStorage {
 func (m *mockOrderStorage) SaveOrder(ctx context.Context, order *models.Order) error {
 	_, ok := m.stor[order.Number.String()]
 	if ok {
-		return fmt.Errorf("Order with number %s already exists", order.Number.String())
+		return fmt.Errorf("order with number %s already exists", order.Number.String())
 	}
 	m.stor[order.Number.String()] = order
 	return nil

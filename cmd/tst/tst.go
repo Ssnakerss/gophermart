@@ -1,43 +1,32 @@
 package main
 
-import (
-	"context"
-	"fmt"
-	"time"
+func main() {
+	// 	logger.Setup("DEV")
+	// 	// slog.Info("Hello", "module", "tst")
 
-	"github.com/Ssnakerss/gophermart/internal/logger"
-	"github.com/Ssnakerss/gophermart/internal/mock"
-	"github.com/Ssnakerss/gophermart/internal/models"
-	"github.com/Ssnakerss/gophermart/internal/proc/order"
-)
+	// 	// d, _ := db.New(db.ConString, db.Info)
+	// 	// ag := accrual.NewAccrualGetter(nil, d)
+	// 	// po := ag.GetPendingOrders(context.Background())
+	// 	// fmt.Println(po)
 
-// func main() {
-// 	logger.Setup("DEV")
-// 	// slog.Info("Hello", "module", "tst")
+	// 	m := mock.NewMockOrderStorage()
+	// 	op := order.NewOrderProcessor(m)
+	// 	testUser := &models.User{ID: "test", Hash: "test", UpdatedAt: time.Now()}
+	// 	anotherTestUser := &models.User{ID: "anothertest", Hash: "anothertest", UpdatedAt: time.Now()}
 
-// 	// d, _ := db.New(db.ConString, db.Info)
-// 	// ag := accrual.NewAccrualGetter(nil, d)
-// 	// po := ag.GetPendingOrders(context.Background())
-// 	// fmt.Println(po)
+	// 	// o := &models.Order{
+	// 	// 	Number: 1000256,
+	// 	// 	UserID: "testy",
+	// 	// 	Status: types.NEW,
+	// 	// }
 
-// 	m := mock.NewMockOrderStorage()
-// 	op := order.NewOrderProcessor(m)
-// 	testUser := &models.User{ID: "test", Hash: "test", UpdatedAt: time.Now()}
-// 	anotherTestUser := &models.User{ID: "anothertest", Hash: "anothertest", UpdatedAt: time.Now()}
+	// 	// oo := &models.Order{
+	// 	// 	Number: 1000256,
+	// 	// }
 
-// 	// o := &models.Order{
-// 	// 	Number: 1000256,
-// 	// 	UserID: "testy",
-// 	// 	Status: types.NEW,
-// 	// }
+	// 	newOrder := op.NewOrder(context.Background(), "1000256", testUser)
+	// 	fmt.Println("-----------------------")
+	// 	newOrder = op.NewOrder(context.Background(), "1000256", anotherTestUser)
 
-// 	// oo := &models.Order{
-// 	// 	Number: 1000256,
-// 	// }
-
-// 	newOrder := op.NewOrder(context.Background(), "1000256", testUser)
-// 	fmt.Println("-----------------------")
-// 	newOrder = op.NewOrder(context.Background(), "1000256", anotherTestUser)
-
-// 	fmt.Println(newOrder)
+	// 	fmt.Println(newOrder)
 }
