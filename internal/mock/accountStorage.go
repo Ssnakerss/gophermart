@@ -24,7 +24,7 @@ func NewMockAccountStorage() *mockAccountStorage {
 func (m *mockAccountStorage) CreateAccount(ctx context.Context, account *models.Account) error {
 	_, ok := m.accounts[account.UserID]
 	if ok {
-		return fmt.Errorf(fmt.Sprintf("Account with ID  %s already exists", account.UserID))
+		return fmt.Errorf("account with id  %s already exists", account.UserID)
 	}
 	m.accounts[account.UserID] = account
 	return nil
