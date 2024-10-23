@@ -6,6 +6,7 @@ require (
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/jwtauth/v5 v5.3.1
+	github.com/google/uuid v1.6.0
 	github.com/jackc/pgconn v1.13.0
 )
 

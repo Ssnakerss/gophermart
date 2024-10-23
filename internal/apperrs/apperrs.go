@@ -13,7 +13,7 @@ var (
 	//при логине или проверке токена
 	ErrUserNotFound = errors.New("user not found")
 
-	//приш регистрации пользователя
+	//при регистрации пользователя
 	ErrUserAlreadyExists = errors.New("user already exists")
 
 	ErrStatusBadRequest = errors.New("bad request")
@@ -28,5 +28,6 @@ var (
 	ErrReadBody    = errors.New("error reading body")
 	ErrConvertBody = errors.New("error unmarshalling body")
 
-	ErrAccSystemProblem = errors.New("accrual system problem") //при работе с системой бонусов
+	//при работе с системой бонусов
+	ErrAccSystemProblem = errors.New("accrual system problem")
 )

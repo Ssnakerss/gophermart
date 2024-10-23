@@ -92,8 +92,8 @@ func (db *GormDB) GetAccount(ctx context.Context, account *models.Account) error
 	return db.DB.WithContext(ctx).First(account).Error
 }
 
-func (db *GormDB) GetHistory(ctx context.Context, transaction *models.Transaction) []models.Transaction {
+func (db *GormDB) GetHistory(ctx context.Context, accTransaction *models.Transaction) []models.Transaction {
 	var transactions []models.Transaction
-	db.DB.WithContext(ctx).Order("time_stamp DESC").Find(&transactions, transaction)
+	db.DB.WithContext(ctx).Order("time_stamp DESC").Find(&transactions, accTransaction)
 	return transactions
 }

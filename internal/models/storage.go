@@ -19,9 +19,13 @@ type OrderStorage interface {
 }
 
 type AccountStorage interface {
+	//создает счет для нового пользователя
+	//происходит при регистраии пользователя
 	CreateAccount(ctx context.Context, account *Account) error
-	GetAccount(ctx context.Context, account *Account) error                 //возвращает баланс пользователя
-	GetHistory(ctx context.Context, transaction *Transaction) []Transaction //возвращает историю операций
+	//возвращает баланс пользователя
+	GetAccount(ctx context.Context, account *Account) error
+	//возвращает историю операций
+	GetHistory(ctx context.Context, transaction *Transaction) []Transaction
 
 	//TODO пересмотреть интерфейсы ↓↓↓
 	PostTransaction(ctx context.Context, transaction *Transaction) error //проводка по счету
