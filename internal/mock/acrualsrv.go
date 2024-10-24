@@ -57,7 +57,7 @@ func NewMockAccrualService(ctx context.Context) *MockAccrualService {
 func (mas *MockAccrualService) GetAccrual(order types.OrderNum) (*models.AccrualResponse, error) {
 	ar := models.AccrualResponse{Order: order}
 
-	maxRequestCnt := int32(randRange(100, 150))
+	maxRequestCnt := int32(randRange(1000, 1500))
 	atomic.AddInt32(&requestCounter, 1)
 	if atomic.LoadInt32(&requestCounter) > maxRequestCnt {
 		ar.Order = 0

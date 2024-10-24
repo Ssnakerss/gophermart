@@ -57,11 +57,12 @@ func RunWithContext(ctx context.Context, cfg *flags.AppConfig) error {
 		accrualService = accrualsrv.NewHTTPAccrualsystem(cfg.AccrualSystemAddress)
 	}
 	//
+
 	ag := accrualsrv.NewAccrualGetter(accrualService, storage)
 
 	g, gCtx := errgroup.WithContext(ctx)
 	g.Go(func() error {
-		return ag.Run(ctx, accrualsrv.RunInterval, accrualsrv.BatchSize)
+		return ag.Run(ctx, accrualsrv.RunInterval) //, accrualsrv.BatchSize)
 	})
 
 	g.Go(func() error {
