@@ -61,6 +61,7 @@ func (ag *AccrualGetter) UpdateOrderStatus(ctx context.Context, orderToUpdate *m
 var RunInterval int = 10 //секунды
 func (ag AccrualGetter) Run(ctx context.Context, intervalSec int) error {
 	for {
+		time.Sleep(time.Second * time.Duration(intervalSec))
 		select {
 		case <-ctx.Done():
 			slog.Info("accrual getter finished")
@@ -101,8 +102,6 @@ func (ag AccrualGetter) Run(ctx context.Context, intervalSec int) error {
 			}
 			wg.Wait() // wait for all goroutines to finish
 			close(res)
-
-			time.Sleep(time.Second * time.Duration(intervalSec))
 		}
 	}
 }
